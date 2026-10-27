@@ -30,6 +30,18 @@ dotnet run --project Antivisual.csproj
 dotnet test Antivisual.sln
 ```
 
+## 发布 win-x64 完整应用
+
+```powershell
+.\build-win-x64.ps1
+```
+
+脚本会生成自包含的 Release 单文件应用，目标机器不需要另装 .NET：
+
+- 应用目录：`artifacts\publish\win-x64\Antivisual.exe`
+- 分发压缩包：`artifacts\Antivisual-win-x64.zip`
+- `Assets` 必须与应用一起分发，ZIP 已包含全部默认素材。
+
 ## 默认素材位置
 
 默认素材已内置到项目的 `Assets` 目录，并会在构建时复制到应用输出目录：
