@@ -1,0 +1,161 @@
+<Window x:Class="Antivisual.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:skia="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
+        Title="Antivisual — 视频封面生成器" Height="900" Width="1440"
+        MinHeight="720" MinWidth="1120" WindowStartupLocation="CenterScreen"
+        Background="{StaticResource WindowBrush}" Foreground="{StaticResource TextBrush}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="400" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="{StaticResource PanelBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,1,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid Margin="24,24,24,18">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border Width="38" Height="38" CornerRadius="10" Background="{StaticResource AccentBrush}" VerticalAlignment="Center">
+                        <TextBlock Text="A" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   FontSize="20" FontWeight="Bold" Foreground="#121019" />
+                    </Border>
+                    <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="ANTIVISUAL" FontSize="16" FontWeight="SemiBold" />
+                        <TextBlock Text="VIDEO COVER STUDIO" Style="{StaticResource Caption}" FontSize="9" />
+                    </StackPanel>
+                </Grid>
+
+                <ScrollViewer x:Name="SettingsScroller" Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="20,0,20,12">
+                        <Border Style="{StaticResource Section}">
+                            <StackPanel>
+                                <TextBlock Text="01  曲目信息" Style="{StaticResource SectionTitle}" />
+                                <TextBlock Text="曲目名称" Style="{StaticResource FieldLabel}" Margin="0,0,0,6" />
+                                <TextBox Text="{Binding TrackTitle, UpdateSourceTrigger=PropertyChanged}" MaxLength="120" />
+                                <TextBlock Text="曲目作者" Style="{StaticResource FieldLabel}" />
+                                <TextBox Text="{Binding TrackArtist, UpdateSourceTrigger=PropertyChanged}" MaxLength="120" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Section}">
+                            <StackPanel>
+                                <TextBlock Text="02  图像素材" Style="{StaticResource SectionTitle}" />
+                                <TextBlock Text="模糊背景" Style="{StaticResource FieldLabel}" Margin="0,0,0,6" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Background="{StaticResource ControlBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="10,8" Margin="0,0,6,0">
+                                        <TextBlock Text="{Binding BackgroundDisplayName}" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" ToolTip="{Binding BackgroundPath}" />
+                                    </Border>
+                                    <Button Grid.Column="1" Content="选择" Command="{Binding BrowseBackgroundCommand}" Margin="0,0,6,0" />
+                                    <Button Grid.Column="2" Content="默认" Command="{Binding ResetBackgroundCommand}" ToolTip="恢复默认背景" />
+                                </Grid>
+                                <TextBlock Text="曲目封面（将缩放为 1:1）" Style="{StaticResource FieldLabel}" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Background="{StaticResource ControlBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="10,8" Margin="0,0,6,0">
+                                        <TextBlock Text="{Binding CoverDisplayName}" Foreground="{StaticResource MutedBrush}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" ToolTip="{Binding CoverPath}" />
+                                    </Border>
+                                    <Button Grid.Column="1" Content="上传封面" Command="{Binding BrowseCoverCommand}" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Section}">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,14">
+                                    <TextBlock Text="03  装饰图层" Style="{StaticResource SectionTitle}" Margin="0" />
+                                    <CheckBox Content="启用双侧装饰" Style="{StaticResource Switch}" HorizontalAlignment="Right"
+                                              IsChecked="{Binding SideDecorationsEnabled}" />
+                                </Grid>
+                                <TextBlock Text="左侧装饰" Style="{StaticResource FieldLabel}" Margin="0,0,0,6" />
+                                <ComboBox ItemsSource="{Binding SideOptions}" DisplayMemberPath="Name" SelectedValuePath="Path"
+                                          SelectedValue="{Binding LeftSidePath}" IsEnabled="{Binding SideDecorationsEnabled}" />
+                                <TextBlock Text="右侧装饰" Style="{StaticResource FieldLabel}" />
+                                <ComboBox ItemsSource="{Binding SideOptions}" DisplayMemberPath="Name" SelectedValuePath="Path"
+                                          SelectedValue="{Binding RightSidePath}" IsEnabled="{Binding SideDecorationsEnabled}" />
+                                <TextBlock Text="文本栏底图" Style="{StaticResource FieldLabel}" />
+                                <ComboBox ItemsSource="{Binding TextBackgroundOptions}" DisplayMemberPath="Name" SelectedValuePath="Path"
+                                          SelectedValue="{Binding TextBackgroundPath}" />
+                                <Button Content="重新扫描素材目录" Command="{Binding RefreshAssetsCommand}" Margin="0,12,0,0" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource Section}">
+                            <StackPanel>
+                                <TextBlock Text="04  文字效果" Style="{StaticResource SectionTitle}" />
+                                <TextBlock Text="字体" Style="{StaticResource FieldLabel}" Margin="0,0,0,6" />
+                                <ComboBox ItemsSource="{Binding FontFamilies}" SelectedItem="{Binding FontFamily}" />
+                                <TextBlock Text="光泽颜色" Style="{StaticResource FieldLabel}" />
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                    <Button Style="{StaticResource SwatchButton}" Background="#2300A5" Command="{Binding SelectColorCommand}" CommandParameter="#2300A5" ToolTip="PSD 紫" />
+                                    <Button Style="{StaticResource SwatchButton}" Background="#A78BFA" Command="{Binding SelectColorCommand}" CommandParameter="#A78BFA" ToolTip="淡紫" />
+                                    <Button Style="{StaticResource SwatchButton}" Background="#38BDF8" Command="{Binding SelectColorCommand}" CommandParameter="#38BDF8" ToolTip="青蓝" />
+                                    <Button Style="{StaticResource SwatchButton}" Background="#FB7185" Command="{Binding SelectColorCommand}" CommandParameter="#FB7185" ToolTip="玫红" />
+                                    <Button Style="{StaticResource SwatchButton}" Background="#F8FAFC" Command="{Binding SelectColorCommand}" CommandParameter="#F8FAFC" ToolTip="银白" />
+                                    <Button Style="{StaticResource SwatchButton}" Content="…" Command="{Binding ChooseColorCommand}" ToolTip="自定义颜色" />
+                                </StackPanel>
+                                <TextBox Text="{Binding GlossColor, UpdateSourceTrigger=PropertyChanged}" MaxLength="7" ToolTip="输入 #RRGGBB" />
+                                <TextBlock Text="预览与导出会同步应用文字光泽、投影及封面描边。" Style="{StaticResource Caption}" Margin="0,10,0,0" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <Border Grid.Row="2" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,1,0,0" Padding="20,16">
+                    <StackPanel>
+                        <TextBlock Text="{Binding OutputDirectory}" Style="{StaticResource Caption}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Margin="0,0,0,10" />
+                        <Button Content="导出 16:9 + 4:3 PNG" Style="{StaticResource PrimaryButton}" Command="{Binding ExportCommand}" />
+                        <Button Content="打开输出文件夹" Command="{Binding OpenOutputFolderCommand}" Margin="0,8,0,0" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Column="1" Margin="28">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid Margin="0,0,0,20">
+                <StackPanel>
+                    <TextBlock Text="导出预览" FontSize="20" FontWeight="SemiBold" />
+                    <TextBlock Text="同一内容将自动适配两种画布比例" Style="{StaticResource Caption}" Margin="0,4,0,0" />
+                </StackPanel>
+                <Border HorizontalAlignment="Right" VerticalAlignment="Center" Background="{StaticResource PanelBrush}"
+                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="8" Padding="2">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Content="16 : 9" Style="{StaticResource WideRatioButton}" Command="{Binding SetPreviewAspectCommand}" CommandParameter="wide" Margin="2" />
+                        <Button Content="4 : 3" Style="{StaticResource StandardRatioButton}" Command="{Binding SetPreviewAspectCommand}" CommandParameter="standard" Margin="2" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+            <Border Grid.Row="1" Background="#07090B" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="12" ClipToBounds="True">
+                <Grid>
+                    <skia:SKElement x:Name="PreviewCanvas" PaintSurface="PreviewCanvas_PaintSurface" IgnorePixelScaling="True" />
+                    <ProgressBar IsIndeterminate="True" Height="3" VerticalAlignment="Top" Foreground="{StaticResource AccentBrush}"
+                                 Background="Transparent" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                </Grid>
+            </Border>
+            <Grid Grid.Row="2" Margin="2,16,2,0">
+                <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource Caption}" />
+                <TextBlock Text="{Binding PreviewResolution}" Style="{StaticResource Caption}" HorizontalAlignment="Right" />
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
