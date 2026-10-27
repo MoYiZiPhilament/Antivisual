@@ -69,8 +69,8 @@ public sealed class CoverRenderer : IDisposable
             }
 
             DrawTextBackground(canvas, CoverSettings.DefaultTextBackgroundPath, layout);
-            DrawText(canvas, settings, layout);
             DrawCover(canvas, settings.CoverPath, layout);
+            DrawText(canvas, settings, layout);
         }
         finally
         {

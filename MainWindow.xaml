@@ -4,13 +4,13 @@
         xmlns:skia="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
         Title="Antivisual — 视频封面生成器" Height="920" Width="1440"
         MinHeight="720" MinWidth="1120" WindowStartupLocation="CenterScreen"
+        Icon="Assets/App.png"
         WindowStyle="None" ResizeMode="CanResize" AllowsTransparency="True"
         Background="Transparent" Foreground="{StaticResource TextBrush}">
     <Grid x:Name="WindowRoot" PreviewMouseMove="WindowRoot_PreviewMouseMove"
           PreviewMouseLeftButtonUp="WindowRoot_PreviewMouseLeftButtonUp">
         <Border x:Name="WindowFrame" Background="{StaticResource WindowBrush}"
-                BorderBrush="#B7BDC7" BorderThickness="1" CornerRadius="12"
-                ClipToBounds="True" SizeChanged="WindowFrame_SizeChanged">
+                CornerRadius="12" ClipToBounds="True" SizeChanged="WindowFrame_SizeChanged">
             <Border.Clip>
                 <RectangleGeometry x:Name="WindowClip" RadiusX="12" RadiusY="12" />
             </Border.Clip>
@@ -179,6 +179,9 @@
             </Grid>
             </Grid>
         </Border>
+
+        <Border x:Name="WindowOutline" BorderBrush="#B7BDC7" BorderThickness="1"
+                CornerRadius="12" IsHitTestVisible="False" />
 
         <Border Width="6" HorizontalAlignment="Left" Background="Transparent" Cursor="SizeWE" Tag="10" PreviewMouseLeftButtonDown="ResizeBorder_MouseLeftButtonDown" />
         <Border Width="6" HorizontalAlignment="Right" Background="Transparent" Cursor="SizeWE" Tag="11" PreviewMouseLeftButtonDown="ResizeBorder_MouseLeftButtonDown" />

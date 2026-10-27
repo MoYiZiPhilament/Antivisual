@@ -99,7 +99,8 @@ public partial class MainWindow : Window
         var maximized = WindowState == WindowState.Maximized;
         var radius = maximized ? 0 : 12;
         WindowFrame.CornerRadius = new CornerRadius(radius);
-        WindowFrame.BorderThickness = new Thickness(maximized ? 0 : 1);
+        WindowOutline.CornerRadius = new CornerRadius(radius);
+        WindowOutline.BorderThickness = new Thickness(maximized ? 0 : 1);
         WindowClip.RadiusX = radius;
         WindowClip.RadiusY = radius;
         WindowClip.Rect = new Rect(0, 0, WindowFrame.ActualWidth, WindowFrame.ActualHeight);
