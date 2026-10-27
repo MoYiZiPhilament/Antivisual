@@ -12,7 +12,7 @@ namespace Antivisual.ViewModels;
 
 public partial class MainViewModel : ObservableObject
 {
-    private const string DefaultBackground = AssetCatalog.DefaultBackgroundPath;
+    private static readonly string DefaultBackground = AssetCatalog.DefaultBackgroundPath;
     private readonly SettingsService _settingsService;
     private readonly ExportService _exportService;
     private CancellationTokenSource? _saveCancellation;
@@ -120,7 +120,7 @@ public partial class MainViewModel : ObservableObject
             if (string.IsNullOrWhiteSpace(RightSidePath)) RightSidePath = SideOptions[^1].Path;
         }
         if (TextBackgroundOptions.Count > 0 && string.IsNullOrWhiteSpace(TextBackgroundPath))
-            TextBackgroundPath = (TextBackgroundOptions.FirstOrDefault(item => item.Name.Equals("TextBG_1.png", StringComparison.OrdinalIgnoreCase)) ?? TextBackgroundOptions[0]).Path;
+            TextBackgroundPath = (TextBackgroundOptions.FirstOrDefault(item => item.Name.Equals("TextBG_6.png", StringComparison.OrdinalIgnoreCase)) ?? TextBackgroundOptions[0]).Path;
 
         if (!_initialized) return;
         StatusMessage = SideOptions.Count + TextBackgroundOptions.Count > 0

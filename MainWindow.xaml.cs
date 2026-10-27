@@ -1,4 +1,5 @@
 using System.Windows;
+using System.Windows.Input;
 using Antivisual.Models;
 using Antivisual.Rendering;
 using Antivisual.ViewModels;
@@ -28,6 +29,27 @@ public partial class MainWindow : Window
             _renderer.Dispose();
         };
     }
+
+    private void TopBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ClickCount == 2)
+        {
+            ToggleWindowState();
+            return;
+        }
+
+        if (e.LeftButton == MouseButtonState.Pressed && WindowState != WindowState.Maximized)
+            DragMove();
+    }
+
+    private void MinimizeButton_Click(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
+
+    private void MaximizeButton_Click(object sender, RoutedEventArgs e) => ToggleWindowState();
+
+    private void CloseButton_Click(object sender, RoutedEventArgs e) => Close();
+
+    private void ToggleWindowState()
+        => WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
 
     private void PreviewCanvas_PaintSurface(object sender, SKPaintSurfaceEventArgs e)
     {

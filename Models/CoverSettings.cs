@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace Antivisual.Models;
 
 /// <summary>
@@ -5,11 +7,10 @@ namespace Antivisual.Models;
 /// </summary>
 public sealed record CoverSettings
 {
-    public const string DefaultBackgroundPath =
-        @"E:\Arcade-Alpha_v1.11.3_b2026072500\Backgrounds\megarex_signal.jpg";
+    public static string DefaultAssetRoot { get; } = Path.Combine(AppContext.BaseDirectory, "Assets");
 
-    public const string DefaultAssetRoot =
-        @"C:\Users\1\Documents\TempContent\Antivisual";
+    public static string DefaultBackgroundPath { get; } = Path.Combine(
+        DefaultAssetRoot, "Backgrounds", "megarex_signal.jpg");
 
     public string TrackTitle { get; init; } = "Nutshell Princess";
 
@@ -19,14 +20,11 @@ public sealed record CoverSettings
 
     public string CoverPath { get; init; } = string.Empty;
 
-    public string LeftSidePath { get; init; } =
-        $@"{DefaultAssetRoot}\Side\lacrymira.png";
+    public string LeftSidePath { get; init; } = Path.Combine(DefaultAssetRoot, "Side", "lacrymira.png");
 
-    public string RightSidePath { get; init; } =
-        $@"{DefaultAssetRoot}\Side\nell.png";
+    public string RightSidePath { get; init; } = Path.Combine(DefaultAssetRoot, "Side", "nell.png");
 
-    public string TextBackgroundPath { get; init; } =
-        $@"{DefaultAssetRoot}\Text\TextBG_1.png";
+    public string TextBackgroundPath { get; init; } = Path.Combine(DefaultAssetRoot, "Text", "TextBG_6.png");
 
     public bool SideDecorationsEnabled { get; init; } = true;
 

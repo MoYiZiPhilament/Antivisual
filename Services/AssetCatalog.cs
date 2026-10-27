@@ -5,9 +5,12 @@ namespace Antivisual.Services;
 
 public static class AssetCatalog
 {
-    public const string SideDirectory = @"C:\Users\1\Documents\TempContent\Antivisual\Side";
-    public const string TextBackgroundDirectory = @"C:\Users\1\Documents\TempContent\Antivisual\Text";
-    public const string DefaultBackgroundPath = @"E:\Arcade-Alpha_v1.11.3_b2026072500\Backgrounds\megarex_signal.jpg";
+    public const string LegacyAssetRoot = @"C:\Users\1\Documents\TempContent\Antivisual";
+    public const string LegacyDefaultBackgroundPath = @"E:\Arcade-Alpha_v1.11.3_b2026072500\Backgrounds\megarex_signal.jpg";
+
+    public static string SideDirectory { get; } = Path.Combine(CoverSettings.DefaultAssetRoot, "Side");
+    public static string TextBackgroundDirectory { get; } = Path.Combine(CoverSettings.DefaultAssetRoot, "Text");
+    public static string DefaultBackgroundPath => CoverSettings.DefaultBackgroundPath;
 
     private static readonly HashSet<string> ImageExtensions = new(StringComparer.OrdinalIgnoreCase)
     {

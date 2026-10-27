@@ -6,18 +6,18 @@ namespace Antivisual.Rendering;
 
 /// <summary>
 /// Renders all five cover layers in one coordinate system for both interactive previews and PNG export.
-/// Successfully decoded images and text-background measurements are cached for the renderer lifetime.
+/// Successfully decoded images are cached for the renderer lifetime.
 /// </summary>
 public sealed class CoverRenderer : IDisposable
 {
     private const byte BackgroundOpacity = 148;
     private const float BackgroundBlur = 28f;
+    private const float SideHorizontalSpan = 1.12f;
     private static readonly SKSamplingOptions HighQualitySampling =
         new(SKFilterMode.Linear, SKMipmapMode.Linear);
 
     private readonly object _sync = new();
     private readonly Dictionary<string, SKImage> _images = new(StringComparer.OrdinalIgnoreCase);
-    private readonly Dictionary<string, float> _strongBandCenters = new(StringComparer.OrdinalIgnoreCase);
     private bool _disposed;
 
     /// <summary>
@@ -161,7 +161,6 @@ public sealed class CoverRenderer : IDisposable
             }
 
             _images.Clear();
-            _strongBandCenters.Clear();
         }
     }
 
@@ -204,7 +203,8 @@ public sealed class CoverRenderer : IDisposable
             return;
         }
 
-        var width = image.Width * (layout.Height / (float)image.Height);
+        var width = image.Width * (layout.Height / (float)image.Height) * SideHorizontalSpan;
+        // Widen into the composition while keeping both rectangles fully inside the canvas.
         var destination = left
             ? new SKRect(0, 0, width, layout.Height)
             : new SKRect(layout.Width - width, 0, layout.Width, layout.Height);
@@ -219,21 +219,7 @@ public sealed class CoverRenderer : IDisposable
             return;
         }
 
-        SKRect destination;
-        if (string.Equals(Path.GetFileName(path), "TextBG_6.png", StringComparison.OrdinalIgnoreCase))
-        {
-            destination = layout.TextBackground6Rect;
-        }
-        else
-        {
-            var scale = layout.Width / (float)image.Width;
-            var height = image.Height * scale;
-            var sourceBandCenter = GetStrongBandCenter(path, image);
-            var top = layout.TextBandCenterY - sourceBandCenter * scale;
-            destination = new SKRect(0, top, layout.Width, top + height);
-        }
-
-        canvas.DrawImage(image, destination, HighQualitySampling);
+        canvas.DrawImage(image, layout.TextBackground6Rect, HighQualitySampling);
     }
 
     private static void DrawText(SKCanvas canvas, CoverSettings settings, CoverLayout layout)
@@ -353,16 +339,29 @@ public sealed class CoverRenderer : IDisposable
 
         var rect = layout.CoverRect;
 
-        using (var shadowBlur = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 62.5f))
+        using (var shadowBlur = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 80f))
         using (var paint = new SKPaint
                {
                    IsAntialias = true,
-                   Color = new SKColor(0, 0, 0, 128),
+                   Color = new SKColor(0, 0, 0, 210),
                    MaskFilter = shadowBlur
                })
         {
             var shadowRect = rect;
-            shadowRect.Offset(0, 31);
+            shadowRect.Offset(0, 38);
+            canvas.DrawRect(shadowRect, paint);
+        }
+
+        using (var contactBlur = SKMaskFilter.CreateBlur(SKBlurStyle.Normal, 18f))
+        using (var paint = new SKPaint
+               {
+                   IsAntialias = true,
+                   Color = new SKColor(0, 0, 0, 95),
+                   MaskFilter = contactBlur
+               })
+        {
+            var shadowRect = rect;
+            shadowRect.Offset(0, 12);
             canvas.DrawRect(shadowRect, paint);
         }
 
@@ -465,63 +464,6 @@ public sealed class CoverRenderer : IDisposable
             _images.Add(fullPath, loaded);
             return loaded;
         }
-    }
-
-    private float GetStrongBandCenter(string path, SKImage image)
-    {
-        var key = Path.GetFullPath(path);
-        lock (_sync)
-        {
-            if (_strongBandCenters.TryGetValue(key, out var cached))
-            {
-                return cached;
-            }
-        }
-
-        var center = MeasureStrongBandCenter(image);
-        lock (_sync)
-        {
-            _strongBandCenters[key] = center;
-        }
-
-        return center;
-    }
-
-    private static float MeasureStrongBandCenter(SKImage image)
-    {
-        using var bitmap = SKBitmap.FromImage(image);
-        var first = -1;
-        var last = -1;
-        var xStep = Math.Max(1, image.Width / 512);
-
-        for (var y = 0; y < image.Height; y++)
-        {
-            var hasStrongPixel = false;
-            for (var x = 0; x < image.Width; x += xStep)
-            {
-                if (bitmap.GetPixel(x, y).Alpha < 128)
-                {
-                    continue;
-                }
-
-                hasStrongPixel = true;
-                break;
-            }
-
-            if (!hasStrongPixel)
-            {
-                continue;
-            }
-
-            if (first < 0)
-            {
-                first = y;
-            }
-
-            last = y;
-        }
-
-        return first < 0 ? image.Height * 0.5f : (first + last + 1) * 0.5f;
     }
 
     private static SKPaint CreateTextPaint(SKColor color) => new()
