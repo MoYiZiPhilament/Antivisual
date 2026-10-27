@@ -24,7 +24,7 @@ public sealed record CoverSettings
 
     public string RightSidePath { get; init; } = Path.Combine(DefaultAssetRoot, "Side", "nell.png");
 
-    public string TextBackgroundPath { get; init; } = Path.Combine(DefaultAssetRoot, "Text", "TextBG_6.png");
+    public static string DefaultTextBackgroundPath { get; } = Path.Combine(DefaultAssetRoot, "Text", "TextBG_6.png");
 
     public bool SideDecorationsEnabled { get; init; } = true;
 

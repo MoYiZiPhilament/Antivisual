@@ -12,8 +12,7 @@ public sealed class RenderingTests
         BackgroundPath = string.Empty,
         CoverPath = string.Empty,
         LeftSidePath = string.Empty,
-        RightSidePath = string.Empty,
-        TextBackgroundPath = string.Empty
+        RightSidePath = string.Empty
     };
 
     [Theory]

@@ -24,7 +24,6 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private string coverPath = string.Empty;
     [ObservableProperty] private string leftSidePath = string.Empty;
     [ObservableProperty] private string rightSidePath = string.Empty;
-    [ObservableProperty] private string textBackgroundPath = string.Empty;
     [ObservableProperty] private bool sideDecorationsEnabled = true;
     [ObservableProperty] private string fontFamily = "Felix Titling";
     [ObservableProperty] private string glossColor = "#2300A5";
@@ -41,7 +40,6 @@ public partial class MainViewModel : ObservableObject
         FontFamilies = new ObservableCollection<string>(
             Fonts.SystemFontFamilies.Select(font => font.Source).OrderBy(name => name, StringComparer.CurrentCulture));
         SideOptions = new ObservableCollection<AssetItem>();
-        TextBackgroundOptions = new ObservableCollection<AssetItem>();
         OutputDirectory = ExportService.GetOutputDirectory();
 
         var saved = _settingsService.Load();
@@ -51,7 +49,6 @@ public partial class MainViewModel : ObservableObject
         coverPath = saved.CoverPath;
         leftSidePath = saved.LeftSidePath;
         rightSidePath = saved.RightSidePath;
-        textBackgroundPath = saved.TextBackgroundPath;
         sideDecorationsEnabled = saved.SideDecorationsEnabled;
         fontFamily = saved.FontFamily;
         glossColor = saved.GlossColor;
@@ -64,7 +61,6 @@ public partial class MainViewModel : ObservableObject
 
     public ObservableCollection<string> FontFamilies { get; }
     public ObservableCollection<AssetItem> SideOptions { get; }
-    public ObservableCollection<AssetItem> TextBackgroundOptions { get; }
     public string OutputDirectory { get; }
     public string BackgroundDisplayName => AssetCatalog.DisplayName(BackgroundPath, "未选择背景");
     public string CoverDisplayName => AssetCatalog.DisplayName(CoverPath, "未上传封面");
@@ -84,7 +80,6 @@ public partial class MainViewModel : ObservableObject
         CoverPath = CoverPath,
         LeftSidePath = LeftSidePath,
         RightSidePath = RightSidePath,
-        TextBackgroundPath = TextBackgroundPath,
         SideDecorationsEnabled = SideDecorationsEnabled,
         FontFamily = FontFamily,
         GlossColor = GlossColor,
@@ -112,20 +107,17 @@ public partial class MainViewModel : ObservableObject
     private void RefreshAssets()
     {
         ReplaceItems(SideOptions, AssetCatalog.Enumerate(AssetCatalog.SideDirectory));
-        ReplaceItems(TextBackgroundOptions, AssetCatalog.Enumerate(AssetCatalog.TextBackgroundDirectory));
 
         if (SideOptions.Count > 0)
         {
             if (string.IsNullOrWhiteSpace(LeftSidePath)) LeftSidePath = SideOptions[0].Path;
             if (string.IsNullOrWhiteSpace(RightSidePath)) RightSidePath = SideOptions[^1].Path;
         }
-        if (TextBackgroundOptions.Count > 0 && string.IsNullOrWhiteSpace(TextBackgroundPath))
-            TextBackgroundPath = (TextBackgroundOptions.FirstOrDefault(item => item.Name.Equals("TextBG_6.png", StringComparison.OrdinalIgnoreCase)) ?? TextBackgroundOptions[0]).Path;
 
         if (!_initialized) return;
-        StatusMessage = SideOptions.Count + TextBackgroundOptions.Count > 0
-            ? $"已载入 {SideOptions.Count} 个侧饰与 {TextBackgroundOptions.Count} 个文字底图"
-            : "未找到装饰素材，可在素材目录添加 PNG 后重新扫描";
+        StatusMessage = SideOptions.Count > 0
+            ? $"已载入 {SideOptions.Count} 个侧饰"
+            : "未找到侧饰素材，可在素材目录添加 PNG 后重新扫描";
         Touch();
     }
 
@@ -230,7 +222,6 @@ public partial class MainViewModel : ObservableObject
     partial void OnBackgroundPathChanged(string value) { OnPropertyChanged(nameof(BackgroundDisplayName)); Touch(); }
     partial void OnLeftSidePathChanged(string value) => Touch();
     partial void OnRightSidePathChanged(string value) => Touch();
-    partial void OnTextBackgroundPathChanged(string value) => Touch();
     partial void OnSideDecorationsEnabledChanged(bool value) => Touch();
     partial void OnFontFamilyChanged(string value) => Touch();
     partial void OnGlossColorChanged(string value) => Touch();

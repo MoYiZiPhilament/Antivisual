@@ -4,13 +4,17 @@
         xmlns:skia="clr-namespace:SkiaSharp.Views.WPF;assembly=SkiaSharp.Views.WPF"
         Title="Antivisual — 视频封面生成器" Height="920" Width="1440"
         MinHeight="720" MinWidth="1120" WindowStartupLocation="CenterScreen"
-        WindowStyle="None" ResizeMode="CanResizeWithGrip"
-        Background="{StaticResource WindowBrush}" Foreground="{StaticResource TextBrush}">
-    <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" CornerRadius="0"
-                      GlassFrameThickness="0" UseAeroCaptionButtons="False" />
-    </WindowChrome.WindowChrome>
-    <Grid>
+        WindowStyle="None" ResizeMode="CanResize" AllowsTransparency="True"
+        Background="Transparent" Foreground="{StaticResource TextBrush}">
+    <Grid x:Name="WindowRoot" PreviewMouseMove="WindowRoot_PreviewMouseMove"
+          PreviewMouseLeftButtonUp="WindowRoot_PreviewMouseLeftButtonUp">
+        <Border x:Name="WindowFrame" Background="{StaticResource WindowBrush}"
+                BorderBrush="#B7BDC7" BorderThickness="1" CornerRadius="12"
+                ClipToBounds="True" SizeChanged="WindowFrame_SizeChanged">
+            <Border.Clip>
+                <RectangleGeometry x:Name="WindowClip" RadiusX="12" RadiusY="12" />
+            </Border.Clip>
+            <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="46" />
             <RowDefinition Height="*" />
@@ -32,7 +36,7 @@
                     <TextBlock Text="ANTIVISUAL" FontSize="12" FontWeight="SemiBold" Margin="10,0,0,0" VerticalAlignment="Center" />
                     <TextBlock Text="视频封面生成器" Style="{StaticResource Caption}" Margin="12,0,0,0" VerticalAlignment="Center" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" WindowChrome.IsHitTestVisibleInChrome="True">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Content="—" Style="{StaticResource ChromeButton}" Click="MinimizeButton_Click" ToolTip="最小化" />
                     <Button Content="□" Style="{StaticResource ChromeButton}" Click="MaximizeButton_Click" ToolTip="最大化 / 还原" />
                     <Button Content="×" Style="{StaticResource CloseChromeButton}" Click="CloseButton_Click" FontSize="18" ToolTip="关闭" />
@@ -107,10 +111,6 @@
                                 <TextBlock Text="右侧装饰" Style="{StaticResource FieldLabel}" />
                                 <ComboBox ItemsSource="{Binding SideOptions}" DisplayMemberPath="Name" SelectedValuePath="Path"
                                           SelectedValue="{Binding RightSidePath}" IsEnabled="{Binding SideDecorationsEnabled}" />
-                                <TextBlock Text="文本栏底图" Style="{StaticResource FieldLabel}" />
-                                <Border Background="{StaticResource ControlBrush}" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" CornerRadius="6" Padding="10,8">
-                                    <TextBlock Text="TextBG_6.png（固定）" Foreground="{StaticResource MutedBrush}" />
-                                </Border>
                                 <Button Content="重新扫描侧饰素材" Command="{Binding RefreshAssetsCommand}" Margin="0,12,0,0" />
                             </StackPanel>
                         </Border>
@@ -176,6 +176,17 @@
                 <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource Caption}" />
                 <TextBlock Text="{Binding PreviewResolution}" Style="{StaticResource Caption}" HorizontalAlignment="Right" />
             </Grid>
-        </Grid>
+            </Grid>
+            </Grid>
+        </Border>
+
+        <Border Width="6" HorizontalAlignment="Left" Background="Transparent" Cursor="SizeWE" Tag="10" PreviewMouseLeftButtonDown="ResizeBorder_MouseLeftButtonDown" />
+        <Border Width="6" HorizontalAlignment="Right" Background="Transparent" Cursor="SizeWE" Tag="11" PreviewMouseLeftButtonDown="ResizeBorder_MouseLeftButtonDown" />
+        <Border Height="6" VerticalAlignment="Top" Background="Transparent" Cursor="SizeNS" Tag="12" PreviewMouseLeftButtonDown="ResizeBorder_MouseLeftButtonDown" />
+        <Border Height="6" VerticalAlignment="Bottom" Background="Transparent" Cursor="SizeNS" Tag="15" PreviewMouseLeftButtonDown="ResizeBorder_MouseLeftButtonDown" />
+        <Border Width="9" Height="9" HorizontalAlignment="Left" VerticalAlignment="Top" Background="Transparent" Cursor="SizeNWSE" Tag="13" PreviewMouseLeftButtonDown="ResizeBorder_MouseLeftButtonDown" />
+        <Border Width="9" Height="9" HorizontalAlignment="Right" VerticalAlignment="Top" Background="Transparent" Cursor="SizeNESW" Tag="14" PreviewMouseLeftButtonDown="ResizeBorder_MouseLeftButtonDown" />
+        <Border Width="9" Height="9" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="Transparent" Cursor="SizeNESW" Tag="16" PreviewMouseLeftButtonDown="ResizeBorder_MouseLeftButtonDown" />
+        <Border Width="9" Height="9" HorizontalAlignment="Right" VerticalAlignment="Bottom" Background="Transparent" Cursor="SizeNWSE" Tag="17" PreviewMouseLeftButtonDown="ResizeBorder_MouseLeftButtonDown" />
     </Grid>
 </Window>

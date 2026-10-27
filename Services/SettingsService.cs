@@ -37,8 +37,7 @@ public sealed class SettingsService
                 ? defaults.BackgroundPath
                 : settings.BackgroundPath,
             LeftSidePath = MigrateSidePath(settings.LeftSidePath),
-            RightSidePath = MigrateSidePath(settings.RightSidePath),
-            TextBackgroundPath = defaults.TextBackgroundPath
+            RightSidePath = MigrateSidePath(settings.RightSidePath)
         };
     }
 
